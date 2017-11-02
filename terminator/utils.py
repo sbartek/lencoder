@@ -27,6 +27,11 @@ def df_ints2one_hot_encoding(df, colname, max_num):
     df.drop(colname, axis=1, inplace=True)
     return df
 
+def dfs_column2list_uniques(colname, *args):
+    uniques = set()
+    for df in args:
+        uniques |= set(df[colname].unique())
+    return list(uniques)
 
 class DataTransformer:
     
