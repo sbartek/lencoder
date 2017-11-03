@@ -33,13 +33,11 @@ def dfs_column2list_uniques(colname, *args):
         uniques |= set(df[colname].unique())
     return list(uniques)
 
+def dfs_column2num_dicts(colname, *args):
+    items = dfs_column2list_uniques(colname, *args)
+    return items2num_dicts(items)
+
 class DataTransformer:
     
     def __init__(self):
         pass
-    
-class Encoder:
-    
-    def __init__(self, df, colname):
-        self.df = df
-        self.colname = colname
