@@ -2,7 +2,7 @@
 **/__pycache__/*
 **/.ipynb_checkpoints/*
 **/pickles/*
-**/flycheck_test_encoder.py
+**/flycheck*.py
 
 **/.\#*
 **/\#*
