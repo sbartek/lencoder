@@ -1,6 +1,7 @@
 import os
 import shutil
 from unittest import TestCase
+import numpy as np
 import pandas as pd
 
 from hamcrest import assert_that, equal_to, has_length, has_key, has_value,\
@@ -57,6 +58,21 @@ class TestColumnEncoder(TestCase):
         new_encoder.encode(self.df)
         assert_that(self.df['b'], has_item(0))
 
+
+class TestColumnEncoderWithNans(TestCase):
+
+    def setUp(self):
+        self.df = pd.DataFrame({'b': [0, 3, np.nan, 3]})
+        self.b_encoder = ColumnEncoder(self.df['b'], 'b')
+
+    def test_create_dicts(self):
+        self.b_encoder.create_dicts()
+        assert_that(self.b_encoder.item2num, has_key(np.nan))
+        assert_that(self.b_encoder.item2num, has_value(0))
+        assert_that(self.b_encoder.num2item, has_key(0))
+        assert_that(self.b_encoder.num2item, has_value(2))
+
+        
 class TestOneHotEncodingFunction(TestCase):
 
     def test_one_hot_encoding_eye(self):
