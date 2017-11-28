@@ -46,14 +46,25 @@ class EncoderDictsSaver:
             self.encoder.num2item = data['num2item']
         return self
 
-    
 class ColumnEncoder:
     """
-    Encoder Class: encode and decode a categorical column
+    Encode and decode a categorical column
     """
 
-    def __init__(self, items=None, colname=None, pickle_fn=None):
-        self.items = items
+    def __init__(self, items=None, colname=None, pickle_fn=None, replace_nans_with=np.nan):
+        if items is not None:
+            if np.isnan(replace_nans_with):
+                try:
+                    assert not has_nans(items)
+                except AssertionError:
+                    raise ValueError(
+                        "items contains nan, add parameter replace_nans_with to make it work")
+
+            self.items = items[:]
+            if not np.isnan(replace_nans_with):
+                self.items = replace_nans(items, replace_nans_with)
+        else:
+            self.items = None
         self.colname = colname
         self.item2num = None
         self.num2item = None
@@ -84,8 +95,8 @@ class ColumnEncoder:
         return item2num_fun(items)
     
     def modify_column_item2num(self, df):
-        df[self.colname] = self.items2nums(df[self.colname])
-        return self
+        df.loc[:, self.colname] = self.items2nums(df[self.colname])
+        return df
 
     def encode(self, df):
         if self.item2num is None:
@@ -107,14 +118,13 @@ class ColumnOneHotEncoder(ColumnEncoder):
 
     def add_one_hot_encoding_columns(self, df):
         new_df = self.one_hot_encoding(df)
-        for column in new_df.columns.values:
-            df[column] = new_df[column]
-        return df
+        return concatenate_dfs_on_pseudo_index(df, new_df)
     
     def encode(self, df):
-        super().encode(df).add_one_hot_encoding_columns(df)
-        df.drop(self.colname, axis=1, inplace=True)
-        return self
+        df = super().encode(df)
+        df = self.add_one_hot_encoding_columns(df)
+        df = df.drop(self.colname, axis=1)
+        return df
           
 def items2num_dicts(items):
     """
@@ -133,3 +143,32 @@ def one_hot_encoding_eye(nums, max_num=None, colname="num_", dtype=np.bool):
         max_num = max(nums)
     return pd.DataFrame(np.eye(max_num + 1, dtype=dtype)[nums])\
       .rename(columns=lambda x: colname+str(x))
+
+def has_nans(items):
+    for item in items:
+        if np.isnan(item):
+            return True
+    return False
+
+def replace_nans(items, replace_nans_with):
+    for i in range(len(items)):
+        if np.isnan(item[i]):
+            item[i] = replace_nans_with
+    return items
+
+def add_pseudoindex(df, pseudoindex):
+    df.loc[:, pseudoindex] = range(df.shape[0])
+    
+def drop_pseudoindex(df, pseudoindex):
+    df.drop(pseudoindex, axis=1, inplace=True)
+    
+def merge_on_pseudoindex(df1, df2, pseudoindex):
+    return df1.merge(df2, on=pseudoindex)
+
+def concatenate_dfs_on_pseudo_index(df1, df2, pseudoindex="pseudoindex___"):
+    add_pseudoindex(df1, pseudoindex)
+    add_pseudoindex(df2, pseudoindex)
+    final_df = merge_on_pseudoindex(df1, df2, pseudoindex).copy()
+    drop_pseudoindex(final_df, pseudoindex)
+    return final_df
+
