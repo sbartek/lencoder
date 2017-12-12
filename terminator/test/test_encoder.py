@@ -46,6 +46,16 @@ class TestEncoder(TestCase):
         enc = Encoder(items).create_dicts()
         assert_that(list(enc.decode(np.array([1, 3, 0]))), equal_to(["ala", "ma", '<NAN>']))
 
+    def test_encode_with_euro(self):
+        items = ["ala", "ma", "1€", "ala", None, None, np.nan]
+        enc = Encoder(items).create_dicts()
+        assert_that(list(enc.encode(np.array(["ala", "ma", 'psa', '1€']))), equal_to([2, 3, 1, 0]))
+
+    def test_dcode_with_eur(self):
+        items = ["ala", "ma", "1€", "ala", None, None, np.nan]
+        enc = Encoder(items).create_dicts()
+        assert_that(list(enc.decode(np.array([1, 3, 0]))), equal_to(['<NAN>', "ma", '1€']))
+
 class TestCreateEncoderFromItemsList(TestCase):
     
     def test_encode_with_non_existent(self):
