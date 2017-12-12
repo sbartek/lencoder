@@ -6,7 +6,80 @@ import pickle
 import numpy as np
 import pandas as pd
 
-from .utils import dict2fun
+from .utils import dict2fun, dict2fun_with_nan_replacement
+
+NAN_REPLACEMENT = "<NAN>"
+
+class Encoder:
+    """
+    Encodes list o vector
+    """
+
+    def __init__(self, items=None, config=None, **kwargs):
+        """
+        config:
+        add_nan: True or False (default=True)
+        pickle_fn: path where to save dicts
+        """
+        if config is None:
+            self.config = dict(**kwargs)
+        else:
+            self.config = dict(config, **kwargs)
+        self.items = self.clean_items(items, self.add_nan) if items is not None else None
+        self.item2num = None
+        self.num2item = None
+        #### ACHTUNG!!! "new_pickle" should be removed
+        self.dicts_saver = EncoderDictsSaver(self, self.pickle_fn or "new_pickle")
+
+    @classmethod
+    def create_from_items_list(cls, items):
+        encoder = cls(items)
+        encoder.create_dicts()
+        return encoder
+        
+    def clean_items(self, items, add_nan=True):
+        if self.nan_replacement is None:
+            self.nan_replacement = NAN_REPLACEMENT
+        items = np.array(list(set(items))+[self.nan_replacement])
+        items[pd.isna(items)] = self.nan_replacement
+        return np.unique(items)
+
+    def create_dicts(self):
+        """Run it if creating dicts from items"""
+        self.item2num, self.num2item = item_num_dicts(self.items)
+        return self
+
+    @property
+    def add_nan(self):
+        return self.config.get('add_nan', True)
+    
+    @property
+    def nan_replacement(self):
+        return self.config.get('nan_replacement')
+
+    @nan_replacement.setter
+    def nan_replacement(self, value):
+        self.config['nan_replacement'] = value
+        
+    @property
+    def pickle_fn(self):
+        return self.config.get('pickle_fn') 
+
+    def encode(self, itmes_to_encode):
+        return self.item2nun_fun(itmes_to_encode)
+
+    def decode(self, nums_to_decode):
+        return self.num2item_fun(nums_to_decode)
+        
+    @property
+    def item2nun_fun(self):
+        if self.add_nan:
+            return np.vectorize(dict2fun_with_nan_replacement(self.item2num, self.nan_replacement))
+        return np.vectorize(dict2fun(self.item2num))
+
+    @property
+    def num2item_fun(self):
+        return np.vectorize(dict2fun(self.num2item))
 
 class EncoderDictsSaver:
     """Class for pickling encoders"""
@@ -46,6 +119,7 @@ class EncoderDictsSaver:
             self.encoder.num2item = data['num2item']
         return self
 
+    
 class ColumnEncoder:
     """
     Encode and decode a categorical column
@@ -125,7 +199,19 @@ class ColumnOneHotEncoder(ColumnEncoder):
         df = self.add_one_hot_encoding_columns(df)
         df = df.drop(self.colname, axis=1)
         return df
-          
+
+def item_num_dicts(items):
+    """
+    input: list of unique items to encode
+    """
+    item2num = {}
+    num2item = {}
+    for i, item in enumerate(items):
+        item2num[item] = i
+        num2item[i] = item
+    return item2num, num2item
+
+    
 def items2num_dicts(items):
     """
     input: list of items to encode
