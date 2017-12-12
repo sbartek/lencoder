@@ -39,4 +39,9 @@ ala: 2
         items = self.encoder_ys.load(stream)
         assert_that(items, data)
 
-    
+    def test_dump2file_and_load_from_file(self):
+        data = {'1€': 1, 'ala': 2}
+        file_name = "terminator/test/yamls/ala_ma_kota.yaml"
+        self.encoder_ys.dump2file(data, file_name)
+        new_data = self.encoder_ys.load_from_file(file_name)
+        assert_that(data, equal_to(new_data))
