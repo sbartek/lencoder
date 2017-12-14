@@ -56,14 +56,25 @@ class TestEncoder(TestCase):
         enc = Encoder(items).create_dicts()
         assert_that(list(enc.decode(np.array([1, 3, 0]))), equal_to(['<NAN>', "ma", '1€']))
 
+    def test_dump_load(self):
+        items = ["ala", "ma", "1€", "ala", None, None, np.nan]
+        enc1 = Encoder.create_from_items_list(items)
+        enc1.dump_dicts(prefix="abc_")
+        enc2 = Encoder.create_from_saved_dicts(prefix="abc_")
+        assert_that(enc2.item2num, equal_to(enc1.item2num))
+        assert_that(enc2.num2item, equal_to(enc1.num2item))
+        items2 = np.array(list(enc2.item2num.keys()))
+        np.testing.assert_array_equal(enc2.encode(items2), enc1.encode(items2))
+        nums2 = np.array(list(enc2.item2num.values()))
+        np.testing.assert_array_equal(enc2.decode(nums2), enc1.decode(nums2))
+
 class TestCreateEncoderFromItemsList(TestCase):
-    
+
     def test_encode_with_non_existent(self):
         items = ["ala", "ma", "kota", "ala", None, None, np.nan]
         enc = Encoder.create_from_items_list(items)
         assert_that(list(enc.encode(np.array(["ala", "ma", 'psa']))), equal_to([1, 3, 0]))
 
-    
 class TestColumnOneHotEncoder(TestCase):
 
     def setUp(self):

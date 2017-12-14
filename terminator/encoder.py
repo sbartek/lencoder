@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import dict2fun, dict2fun_with_nan_replacement
+from .yaml_saver import YamlSaver
 
 NAN_REPLACEMENT = "<NAN>"
 
@@ -28,8 +29,6 @@ class Encoder:
         self.items = self.clean_items(items, self.add_nan) if items is not None else None
         self.item2num = None
         self.num2item = None
-        #### ACHTUNG!!! "new_pickle" should be removed
-        self.dicts_saver = EncoderDictsSaver(self, self.pickle_fn or "new_pickle")
 
     @classmethod
     def create_from_items_list(cls, items):
@@ -80,6 +79,42 @@ class Encoder:
     @property
     def num2item_fun(self):
         return np.vectorize(dict2fun(self.num2item))
+
+    @property
+    def saver(self):
+        if self.config.get('saver') is None:
+            if self.saver_config.get('dir_name') is None:
+                self.saver_config['dir_name'] = "yamls"
+            self.saver = self.saver_cls(self.saver_config)
+        return self.config.get('saver')
+
+    @property
+    def saver_cls(self):
+        return self.config.get('saver_cls', YamlSaver)
+
+    @property
+    def saver_config(self):
+        if 'saver_config' not in self.config:
+            self.config['saver_config'] = {}
+        return self.config['saver_config']
+
+    @saver.setter
+    def saver(self, saver):
+        self.config['saver'] = saver
+
+    def dump_dicts(self, prefix=""):
+        self.saver.dump2file(self.config, prefix+"config")
+        self.saver.dump2file(self.item2num, prefix+"item2num")
+        self.saver.dump2file(self.num2item, prefix+"num2item")
+
+    @classmethod
+    def create_from_saved_dicts(cls, prefix=""):
+        encoder = cls()
+        config = encoder.saver.load_from_file(prefix+"config")
+        encoder.config = config
+        encoder.item2num = encoder.saver.load_from_file(prefix+"item2num")
+        encoder.num2item = encoder.saver.load_from_file(prefix+"num2item")
+        return encoder
 
 class EncoderDictsSaver:
     """Class for pickling encoders"""
@@ -247,7 +282,7 @@ def add_pseudoindex(df, pseudoindex):
     
 def drop_pseudoindex(df, pseudoindex):
     df.drop(pseudoindex, axis=1, inplace=True)
-    
+
 def merge_on_pseudoindex(df1, df2, pseudoindex):
     return df1.merge(df2, on=pseudoindex)
 

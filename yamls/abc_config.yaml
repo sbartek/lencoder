@@ -1,0 +1,6 @@
+nan_replacement: <NAN>
+saver: !!python/object:terminator.yaml_saver.YamlSaver
+  config: &id001
+    dir_name: yamls
+    file_name_suffix: .yaml
+saver_config: *id001
