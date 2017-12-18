@@ -23,7 +23,6 @@ class TestEncoder(TestCase):
     def test_init(self):
         items = ["ala", "ma", "kota", "ala", "€"]
         enc = Encoder(items)
-        print(enc.items)
         assert_that(list(enc.items), equal_to(["<NAN>", "ala", "kota", "ma", "€"]))
 
     def test_init_with_nan(self):

@@ -18,9 +18,8 @@ class Encoder:
 
     def __init__(self, items=None, config=None, **kwargs):
         """
-        config:
-        add_nan: True or False (default=True)
-        pickle_fn: path where to save dicts
+        items: 
+        config: 
         """
         if config is None:
             self.config = dict(**kwargs)
@@ -64,11 +63,16 @@ class Encoder:
     def pickle_fn(self):
         return self.config.get('pickle_fn') 
 
-    def encode(self, itmes_to_encode):
-        return self.item2nun_fun(itmes_to_encode)
+    def encode(self, items2encode):
+        
+        return self.item2nun_fun(items2encode.astype(str))
 
     def decode(self, nums_to_decode):
         return self.num2item_fun(nums_to_decode)
+
+    @property
+    def max_number(self):
+        return max(self.item2num.values())
         
     @property
     def item2nun_fun(self):
@@ -154,7 +158,6 @@ class EncoderDictsSaver:
             self.encoder.num2item = data['num2item']
         return self
 
-    
 class ColumnEncoder:
     """
     Encode and decode a categorical column
@@ -216,7 +219,6 @@ class ColumnEncoder:
     def pickle_path(self):
         """Get full path to pickle"""
         return self.dicts_saver.pickle_path
-
 
 class ColumnOneHotEncoder(ColumnEncoder):
 
