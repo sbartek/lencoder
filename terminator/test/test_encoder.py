@@ -8,15 +8,15 @@ from hamcrest import assert_that, equal_to, has_length, has_key, has_value,\
     has_item, not_none, none, is_not
 
 from terminator import ColumnEncoder, ColumnOneHotEncoder
-from terminator.encoder import one_hot_encoding_eye, Encoder
+from terminator.encoder import Encoder
 
-class TestOneHotEncodingFunction(TestCase):
+# class TestOneHotEncodingFunction(TestCase):
 
-    def test_one_hot_encoding_eye(self):
-        df = one_hot_encoding_eye([0, 1, 0, 2], max_num=2, colname="a")
-        assert_that(df["a0"][0], equal_to(True))
-        assert_that(df["a0"][1], equal_to(False))
-        assert_that(df["a2"][3], equal_to(True))
+#     def test_one_hot_encoding_eye(self):
+#         df = one_hot_encoding_eye([0, 1, 0, 2], max_num=2, colname="a")
+#         assert_that(df["a0"][0], equal_to(True))
+#         assert_that(df["a0"][1], equal_to(False))
+#         assert_that(df["a2"][3], equal_to(True))
 
 class TestEncoder(TestCase):
 
@@ -74,44 +74,44 @@ class TestCreateEncoderFromItemsList(TestCase):
         enc = Encoder.create_from_items_list(items)
         assert_that(list(enc.encode(np.array(["ala", "ma", 'psa']))), equal_to([1, 3, 0]))
 
-class TestColumnOneHotEncoder(TestCase):
+# class TestColumnOneHotEncoder(TestCase):
 
-    def setUp(self):
-        self.df = pd.DataFrame({'a': range(10), 'b': list(range(1, 3))*5})
-        self.b_ohencoder = ColumnOneHotEncoder(self.df['b'], 'b')
+#     def setUp(self):
+#         self.df = pd.DataFrame({'a': range(10), 'b': list(range(1, 3))*5})
+#         self.b_ohencoder = ColumnOneHotEncoder(self.df['b'], 'b')
 
-    def test_dicts_are_none(self):
-        assert_that(self.b_ohencoder.item2num, none())
+#     def test_dicts_are_none(self):
+#         assert_that(self.b_ohencoder.item2num, none())
 
-    def test_dicts_in_not_none(self):
-        self.b_ohencoder.create_dicts()
-        assert_that(self.b_ohencoder.item2num, not_none())
+#     def test_dicts_in_not_none(self):
+#         self.b_ohencoder.create_dicts()
+#         assert_that(self.b_ohencoder.item2num, not_none())
 
-    def test_dicts_in_not_none2(self):
-        self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
-        assert_that(self.b_ohencoder.item2num, not_none())
+#     def test_dicts_in_not_none2(self):
+#         self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
+#         assert_that(self.b_ohencoder.item2num, not_none())
 
-    def test_one_hot_encoding(self):
-        self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
-        ohe = self.b_ohencoder.one_hot_encoding(self.df)
-        assert_that(ohe['b_0'], has_item(True))
+#     def test_one_hot_encoding(self):
+#         self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
+#         ohe = self.b_ohencoder.one_hot_encoding(self.df)
+#         assert_that(ohe['b_0'], has_item(True))
 
-    def test_add_one_hot_encoding_columns(self):
-        self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
-        df = self.b_ohencoder.add_one_hot_encoding_columns(self.df)
-        assert_that(df, has_item('b_0'))
+#     def test_add_one_hot_encoding_columns(self):
+#         self.b_ohencoder.create_dicts().modify_column_item2num(self.df)
+#         df = self.b_ohencoder.add_one_hot_encoding_columns(self.df)
+#         assert_that(df, has_item('b_0'))
 
-    def test_encode(self):
-        df = self.b_ohencoder.encode(self.df)
-        assert_that(df, has_item('b_0'))
-        assert_that(df, is_not(has_item('b')))
+#     def test_encode(self):
+#         df = self.b_ohencoder.encode(self.df)
+#         assert_that(df, has_item('b_0'))
+#         assert_that(df, is_not(has_item('b')))
 
 
-class TestColumnOneHotEncoderWithStrangeIndeces(TestCase):
+# class TestColumnOneHotEncoderWithStrangeIndeces(TestCase):
 
-    def test_strange_index(self):
-        df = pd.DataFrame({"a": range(4)})
-        df = df.query("a != 2")
-        ohencoder = ColumnOneHotEncoder(df['a'], 'a')
-        ohencoder.encode(df)
-        assert_that(df.isnull().values.any(), equal_to(False))
+#     def test_strange_index(self):
+#         df = pd.DataFrame({"a": range(4)})
+#         df = df.query("a != 2")
+#         ohencoder = ColumnOneHotEncoder(df['a'], 'a')
+#         ohencoder.encode(df)
+#         assert_that(df.isnull().values.any(), equal_to(False))

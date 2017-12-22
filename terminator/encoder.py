@@ -220,22 +220,22 @@ class ColumnEncoder:
         """Get full path to pickle"""
         return self.dicts_saver.pickle_path
 
-class ColumnOneHotEncoder(ColumnEncoder):
+# class ColumnOneHotEncoder(ColumnEncoder):
 
-    def one_hot_encoding(self, df):
-        max_num = max(self.item2num.values())
-        return one_hot_encoding_eye(
-            df[self.colname], max_num, colname=self.colname + "_")
+#     def one_hot_encoding(self, df):
+#         max_num = max(self.item2num.values())
+#         return one_hot_encoding_eye(
+#             df[self.colname], max_num, colname=self.colname + "_")
 
-    def add_one_hot_encoding_columns(self, df):
-        new_df = self.one_hot_encoding(df)
-        return concatenate_dfs_on_pseudo_index(df, new_df)
+#     def add_one_hot_encoding_columns(self, df):
+#         new_df = self.one_hot_encoding(df)
+#         return concatenate_dfs_on_pseudo_index(df, new_df)
     
-    def encode(self, df):
-        df = super().encode(df)
-        df = self.add_one_hot_encoding_columns(df)
-        df = df.drop(self.colname, axis=1)
-        return df
+#     def encode(self, df):
+#         df = super().encode(df)
+#         df = self.add_one_hot_encoding_columns(df)
+#         df = df.drop(self.colname, axis=1)
+#         return df
 
 def item_num_dicts(items):
     """
@@ -279,19 +279,19 @@ def replace_nans(items, replace_nans_with):
             item[i] = replace_nans_with
     return items
 
-def add_pseudoindex(df, pseudoindex):
-    df.loc[:, pseudoindex] = range(df.shape[0])
+# def add_pseudoindex(df, pseudoindex):
+#     df.loc[:, pseudoindex] = range(df.shape[0])
     
-def drop_pseudoindex(df, pseudoindex):
-    df.drop(pseudoindex, axis=1, inplace=True)
+# def drop_pseudoindex(df, pseudoindex):
+#     df.drop(pseudoindex, axis=1, inplace=True)
 
-def merge_on_pseudoindex(df1, df2, pseudoindex):
-    return df1.merge(df2, on=pseudoindex)
+# def merge_on_pseudoindex(df1, df2, pseudoindex):
+#     return df1.merge(df2, on=pseudoindex)
 
-def concatenate_dfs_on_pseudo_index(df1, df2, pseudoindex="pseudoindex___"):
-    add_pseudoindex(df1, pseudoindex)
-    add_pseudoindex(df2, pseudoindex)
-    final_df = merge_on_pseudoindex(df1, df2, pseudoindex).copy()
-    drop_pseudoindex(final_df, pseudoindex)
-    return final_df
+# def concatenate_dfs_on_pseudo_index(df1, df2, pseudoindex="pseudoindex___"):
+#     add_pseudoindex(df1, pseudoindex)
+#     add_pseudoindex(df2, pseudoindex)
+#     final_df = merge_on_pseudoindex(df1, df2, pseudoindex).copy()
+#     drop_pseudoindex(final_df, pseudoindex)
+#     return final_df
 
