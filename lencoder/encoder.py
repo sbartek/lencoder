@@ -25,7 +25,7 @@ class Encoder:
             self.config = dict(**kwargs)
         else:
             self.config = dict(config, **kwargs)
-        self.items = self.clean_items(items, self.add_nan) if items is not None else None
+        self.items = self.clean_items(items) if items is not None else None
         self.item2num = None
         self.num2item = None
 
@@ -35,10 +35,13 @@ class Encoder:
         encoder.create_dicts()
         return encoder
         
-    def clean_items(self, items, add_nan=True):
+    def clean_items(self, items):
         if self.nan_replacement is None:
             self.nan_replacement = NAN_REPLACEMENT
-        items = np.array(list(set(items))+[self.nan_replacement])
+        items = list(set(items))
+        if self.add_nan:
+            items.append(self.nan_replacement)
+        items = np.array(items)
         items[pd.isna(items)] = self.nan_replacement
         return np.unique(items)
 
@@ -63,8 +66,7 @@ class Encoder:
     def pickle_fn(self):
         return self.config.get('pickle_fn') 
 
-    def encode(self, items2encode):
-        
+    def encode(self, items2encode):        
         return self.item2nun_fun(items2encode.astype(str))
 
     def decode(self, nums_to_decode):
