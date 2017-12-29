@@ -7,8 +7,8 @@ import pandas as pd
 from hamcrest import assert_that, equal_to, has_length, has_key, has_value,\
     has_item, not_none, none, is_not
 
-from terminator import ColumnEncoder, ColumnOneHotEncoder
-from terminator.encoder import Encoder
+from lencoder import ColumnEncoder, ColumnOneHotEncoder
+from lencoder.encoder import Encoder
 
 # class TestOneHotEncodingFunction(TestCase):
 

@@ -7,7 +7,7 @@ import pandas as pd
 from hamcrest import assert_that, equal_to, has_length, has_key, has_value,\
     has_item, not_none, none, is_not
 
-from terminator.one_hot_encoder import OneHotEncoder
+from lencoder.one_hot_encoder import OneHotEncoder
 
 class TestOneHotEncoder(TestCase):
 
@@ -16,8 +16,24 @@ class TestOneHotEncoder(TestCase):
         ohenc = OneHotEncoder(items).create_dicts()
         assert_that(list(ohenc.items),
                     equal_to(['<NAN>', 'ma', '€']))
+
+    def test_encode(self):
+        items = ["ma", "€"]
+        ohenc = OneHotEncoder(items).create_dicts()
         ohe = ohenc.encode(np.array(["ma", "€", "1"]))
         np.testing.assert_array_equal(
             ohe,
             np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
         )
+
+    def test_decode(self):
+        items = ["ma", "€"]
+        ohenc = OneHotEncoder(items).create_dicts()
+        ohe = ohenc.encode(np.array(["ma", "€", "1"]))
+        np.testing.assert_array_equal(
+            ohe,
+            np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
+        )
+        np.testing.assert_array_equal(
+             ohenc.decode(ohe),
+             np.array(['ma', '€', '<NAN>']))

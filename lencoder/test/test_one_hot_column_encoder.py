@@ -6,8 +6,8 @@ import pandas as pd
 
 from hamcrest import assert_that, equal_to, has_length, has_key, has_value, has_item
 
-from terminator.one_hot_column_encoder import ColumnOneHotEncoder
-from terminator.encoder import has_nans
+from lencoder.one_hot_column_encoder import ColumnOneHotEncoder
+from lencoder.encoder import has_nans
 
 class TestOneHotColumnEncoder(TestCase):
 
@@ -24,5 +24,4 @@ class TestOneHotColumnEncoder(TestCase):
     def test_encode(self):
         self.b_encoder.create_dicts()
         self.b_encoder.encode(self.df)
-        print(self.b_encoder.encode(self.df))
         assert_that(1, equal_to(2))

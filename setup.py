@@ -1,10 +1,10 @@
 from distutils.core import setup
 
 setup(
-    name='Terminator',
-    version='0.0.99',
-    packages=['terminator'],
+    name='lencoder',
+    version='0.1.0',
+    packages=['lencoder'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
+    install_requires=["pyyaml", "numpy", "pandas"]
 )
-

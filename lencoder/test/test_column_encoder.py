@@ -6,8 +6,8 @@ import pandas as pd
 
 from hamcrest import assert_that, equal_to, has_length, has_key, has_value, has_item
 
-from terminator.column_encoder import ColumnEncoder
-from terminator.encoder import has_nans
+from lencoder.column_encoder import ColumnEncoder
+from lencoder.encoder import has_nans
 
 class TestColumnEncoder(TestCase):
 

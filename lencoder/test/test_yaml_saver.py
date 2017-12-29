@@ -1,7 +1,7 @@
 from unittest import TestCase
 from hamcrest import assert_that, equal_to, has_length, has_key
 
-from terminator.yaml_saver import YamlSaver
+from lencoder.yaml_saver import YamlSaver
 
 class TestYamlSaver(TestCase):
 
@@ -41,7 +41,7 @@ ala: 2
 
     def test_dump2file_and_load_from_file(self):
         data = {'1€': 1, 'ala': 2}
-        file_name = "terminator/test/yamls/ala_ma_kota.yaml"
+        file_name = "lencoder/test/yamls/ala_ma_kota.yaml"
         self.encoder_ys.dump2file(data, file_name)
         new_data = self.encoder_ys.load_from_file(file_name)
         assert_that(data, equal_to(new_data))
