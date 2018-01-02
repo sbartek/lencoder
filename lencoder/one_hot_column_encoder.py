@@ -5,7 +5,7 @@ from .one_hot_encoder import OneHotEncoder
 class ColumnOneHotEncoder(OneHotEncoder):
 
     def __init__(self, items=None, colname=None, config=None, **kwargs):
-        super().__init__(items=items, config=config)
+        super().__init__(items=items, config=config, **kwargs)
         if colname is not None:
             self.colname = colname
 

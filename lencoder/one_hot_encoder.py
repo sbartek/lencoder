@@ -4,6 +4,10 @@ from .encoder import Encoder
 
 class OneHotEncoder(Encoder):
 
+    @property
+    def encoder(self):
+        return super()
+    
     def encode(self, itmes_to_encode):
         return one_hot_encoding_eye(
             super().encode(itmes_to_encode),

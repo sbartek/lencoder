@@ -18,8 +18,10 @@ class Encoder:
 
     def __init__(self, items=None, config=None, **kwargs):
         """
-        items: 
-        config: 
+        If you do not want to add nan to encoder add
+        add_nan=False
+        if you want to add specific replacement for nan use for example
+        nan_replacement=-999
         """
         if config is None:
             self.config = dict(**kwargs)
@@ -38,12 +40,13 @@ class Encoder:
     def clean_items(self, items):
         if self.nan_replacement is None:
             self.nan_replacement = NAN_REPLACEMENT
-        items = list(set(items))
+        items = list(set(items))        
         if self.add_nan:
             items.append(self.nan_replacement)
         items = np.array(items)
-        items[pd.isna(items)] = self.nan_replacement
-        return np.unique(items)
+        if sum(pd.isna(items)) > 0:
+            items[pd.isna(items)] = self.nan_replacement
+        return np.unique(items).astype('str')
 
     def create_dicts(self):
         """Run it if creating dicts from items"""
