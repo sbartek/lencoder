@@ -3,8 +3,6 @@
 
 Transformations of python's dataframes and arraya that I can understand.
 
-# One-Hot-Encoding
-
 
 ```python
 import numpy as np
@@ -12,6 +10,63 @@ import pandas as pd
 
 items = ['a', 'b', 'c']
 ```
+
+## Encoder
+
+
+```python
+from lencoder import Encoder
+
+enc = Encoder(items).create_dicts()
+encoded = enc.encode(np.array(['a', 'b']))
+print(encoded)
+```
+
+    [1 2]
+
+
+One number (here `0`) is reserved for `nan`s or not encoded labels.
+
+
+```python
+enc.item2num
+```
+
+
+
+
+    {'<NAN>': 0, 'a': 1, 'b': 2, 'c': 3}
+
+
+
+
+```python
+enc.encode(np.array(['not existing', 'b']))
+```
+
+
+
+
+    array([0, 2])
+
+
+
+If you do not want to reserve something for `nan`s use:
+
+
+```python
+enc = Encoder(items, add_nan=False).create_dicts()
+enc.item2num
+```
+
+
+
+
+    {'a': 0, 'b': 1, 'c': 2}
+
+
+
+## One-Hot-Encoding
 
 ### One-Hot-Encoding adding nans
 
@@ -26,6 +81,21 @@ print(encoded)
 
     [[False  True False False]
      [False False  True False]]
+
+
+#### Encoding new items gives the same result as nan
+
+
+```python
+ohenc.encode(np.array(['something new', 'hehehe']))
+```
+
+
+
+
+    array([[ True, False, False, False],
+           [ True, False, False, False]], dtype=bool)
+
 
 
 ### One-Hot-Encoding no nans
