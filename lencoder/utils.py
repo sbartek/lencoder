@@ -46,7 +46,8 @@ def merge_with_lag(df1, df2, lag, date_column, on_columns=None):
     """
     df1: data frame with which we left join results
     df2: data frame where we will apply lag
-    date_column: column that stores 'dates' where we apply lag, should support operation df2[date_column] + lag
+    date_column: column that stores 'dates' where we apply lag, should support operation 
+       df2[date_column] + lag
     on_columns: columns that on which we apply join
     """
     if on_columns is None:
@@ -65,10 +66,20 @@ def merge_with_lag(df1, df2, lag, date_column, on_columns=None):
     
 pd.DataFrame.merge_with_lag = merge_with_lag
 
-def add_lags(df, date_column, on_columns, lags):
+def add_lags(df, date_column, group_columns, lags):
     laged_df = df
     for lag in lags:
-        laged_df = laged_df.merge_with_lag(df, lag, date_column=date_column, on_columns=on_columns)
+        laged_df = laged_df.merge_with_lag(
+            df, lag, date_column=date_column, on_columns=group_columns)
     return laged_df
 
 pd.DataFrame.add_lags = add_lags
+
+def add_value_encodigs_with_lags(
+        df, date_column, group_columns, value_columns, lags, aggregations=None):
+    prefix = "_".join([date_column] + group_columns) + "_"
+    return df.add_value_encodigs(
+        [date_column] + group_columns, value_columns, aggregations=aggregations, prefix=prefix
+    ).add_lags(date_column, group_columns, lags=lags)
+
+pd.DataFrame.add_value_encodigs_with_lags = add_value_encodigs_with_lags
