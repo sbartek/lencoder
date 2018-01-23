@@ -3,6 +3,12 @@
 
 Transformations of python's dataframes and arraya that I can understand.
 
+## Install
+
+```
+pip install git+https://github.com/sbartek/lencoder
+```
+
 
 ```python
 import numpy as np
@@ -94,7 +100,7 @@ ohenc.encode(np.array(['something new', 'hehehe']))
 
 
     array([[ True, False, False, False],
-           [ True, False, False, False]], dtype=bool)
+           [ True, False, False, False]])
 
 
 
@@ -119,8 +125,7 @@ ohenc.decode(encoded)
 
 
 
-    array(['a', 'b'],
-          dtype='<U1')
+    array(['a', 'b'], dtype='<U1')
 
 
 
@@ -145,7 +150,7 @@ ohenc_from_saved.encode(np.array(['a', 'b']))
 
 
     array([[ True, False, False],
-           [False,  True, False]], dtype=bool)
+           [False,  True, False]])
 
 
 
@@ -392,6 +397,507 @@ saved_cohenc.encode(items_df)
       <td>False</td>
       <td>False</td>
       <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+# Value Encoding
+
+
+```python
+df = pd.DataFrame({
+            'days': sorted(list(range(4)) * 4),
+            'group': sorted(['A', 'B'] * 2) * 4,
+            'value1': sorted(list(range(8)) * 2),
+            'value2': list(range(8)) * 2
+        })
+df
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>days</th>
+      <th>group</th>
+      <th>value1</th>
+      <th>value2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>A</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>B</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>B</td>
+      <td>1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>A</td>
+      <td>2</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>1</td>
+      <td>A</td>
+      <td>2</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1</td>
+      <td>B</td>
+      <td>3</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1</td>
+      <td>B</td>
+      <td>3</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2</td>
+      <td>A</td>
+      <td>4</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2</td>
+      <td>A</td>
+      <td>4</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2</td>
+      <td>B</td>
+      <td>5</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2</td>
+      <td>B</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>3</td>
+      <td>A</td>
+      <td>6</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>3</td>
+      <td>A</td>
+      <td>6</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>3</td>
+      <td>B</td>
+      <td>7</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>3</td>
+      <td>B</td>
+      <td>7</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+from lencoder.value_encoder import ValueEncoder
+venc = ValueEncoder(
+            df, ['days'], ['value1', 'value2'],
+            aggregations=['mean', 'sum'])
+encoded_df = venc.encode()
+encoded_df
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>days</th>
+      <th>days:value1:mean</th>
+      <th>days:value1:sum</th>
+      <th>days:value2:mean</th>
+      <th>days:value2:sum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0.5</td>
+      <td>2</td>
+      <td>1.5</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>2.5</td>
+      <td>10</td>
+      <td>5.5</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>4.5</td>
+      <td>18</td>
+      <td>1.5</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>6.5</td>
+      <td>26</td>
+      <td>5.5</td>
+      <td>22</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df.value_encodigs(
+            ['days'], ['value1', 'value2'],
+            aggregations=['mean', 'sum'])
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>days</th>
+      <th>days:value1:mean</th>
+      <th>days:value1:sum</th>
+      <th>days:value2:mean</th>
+      <th>days:value2:sum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0.5</td>
+      <td>2</td>
+      <td>1.5</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>2.5</td>
+      <td>10</td>
+      <td>5.5</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>4.5</td>
+      <td>18</td>
+      <td>1.5</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>6.5</td>
+      <td>26</td>
+      <td>5.5</td>
+      <td>22</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+## with lags
+
+
+```python
+import lencoder.value_encoder_with_lags
+
+df.value_encodigs_with_lags(
+            'days', ['group'], ['value1', 'value2'],
+            aggregations=['mean', 'sum'], lags=[1, 2])
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>days</th>
+      <th>group</th>
+      <th>days_group:value1:mean</th>
+      <th>days_group:value1:sum</th>
+      <th>days_group:value2:mean</th>
+      <th>days_group:value2:sum</th>
+      <th>days_group:value1:mean_1</th>
+      <th>days_group:value1:sum_1</th>
+      <th>days_group:value2:mean_1</th>
+      <th>days_group:value2:sum_1</th>
+      <th>days_group:value1:mean_2</th>
+      <th>days_group:value1:sum_2</th>
+      <th>days_group:value2:mean_2</th>
+      <th>days_group:value2:sum_2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>A</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.5</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>B</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2.5</td>
+      <td>5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>A</td>
+      <td>2</td>
+      <td>4</td>
+      <td>4.5</td>
+      <td>9</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.5</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>B</td>
+      <td>3</td>
+      <td>6</td>
+      <td>6.5</td>
+      <td>13</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2.5</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2</td>
+      <td>A</td>
+      <td>4</td>
+      <td>8</td>
+      <td>0.5</td>
+      <td>1</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.5</td>
+      <td>9.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.5</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2</td>
+      <td>B</td>
+      <td>5</td>
+      <td>10</td>
+      <td>2.5</td>
+      <td>5</td>
+      <td>3.0</td>
+      <td>6.0</td>
+      <td>6.5</td>
+      <td>13.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2.5</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>3</td>
+      <td>A</td>
+      <td>6</td>
+      <td>12</td>
+      <td>4.5</td>
+      <td>9</td>
+      <td>4.0</td>
+      <td>8.0</td>
+      <td>0.5</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.5</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>3</td>
+      <td>B</td>
+      <td>7</td>
+      <td>14</td>
+      <td>6.5</td>
+      <td>13</td>
+      <td>5.0</td>
+      <td>10.0</td>
+      <td>2.5</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>6.0</td>
+      <td>6.5</td>
+      <td>13.0</td>
     </tr>
   </tbody>
 </table>

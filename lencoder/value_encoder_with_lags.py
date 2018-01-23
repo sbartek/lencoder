@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 from .value_encoder import ValueEncoder
+from . import time_based_utils
 
 class ValueEncoderWithLags(ValueEncoder):
 
@@ -18,7 +19,6 @@ class ValueEncoderWithLags(ValueEncoder):
 
     def encode(self):
         encoded = super().encode()
-        print(self.df)
         return encoded.add_lags(
             self.date_column, self.group_columns,
             self.lags)
