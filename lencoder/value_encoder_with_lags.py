@@ -25,9 +25,16 @@ class ValueEncoderWithLags(ValueEncoder):
 
 def value_encodigs_with_lags(
         df, date_column, group_columns,
-        value_columns, lags, aggregations, **kwargs):
+        value_columns, lags, aggregations, add2dt=False, **kwargs):
     venc = ValueEncoderWithLags(df, date_column, group_columns,
         value_columns, lags, aggregations, **kwargs)
+    if add2dt:
+        return venc.add_encoding()
     return venc.encode()
 
+def add_value_encodigs_with_lags(df, *args, **kwargs):
+    return value_encodigs_with_lags(df, *args, add2dt=True, **kwargs)
+
 pd.DataFrame.value_encodigs_with_lags = value_encodigs_with_lags
+pd.DataFrame.add_value_encodigs_with_lags = add_value_encodigs_with_lags
+

@@ -55,6 +55,10 @@ class ValueEncoder:
                   + self.group_value_joiner + level_1[i]
         return encoded_df
 
+    def add_encoding(self):
+        encoded_df = self.encode()
+        return self.df.merge(encoded_df, on=self.groupby_columns, how="left")
+        
 def value_encodigs(df, groupby_columns, columns, aggregations, **kwargs):
     venc = ValueEncoder(df, groupby_columns, columns, aggregations, **kwargs)
     return venc.encode()
