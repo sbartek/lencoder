@@ -20,8 +20,3 @@ class TestOneHotColumnEncoder(TestCase):
         self.b_encoder.create_dicts()
         assert_that(
             self.b_encoder.items2nums(self.df['b']).shape, equal_to((10, 3)))
-
-    def test_encode(self):
-        self.b_encoder.create_dicts()
-        self.b_encoder.encode(self.df)
-        assert_that(1, equal_to(2))
